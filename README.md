@@ -1,1 +1,1 @@
-# Prática da Lição 6 da [https://github.com/ren-angel/Trilha-NestJS](Trilha de NestJS)
+# Prática da Lição 6 da [Trilha de NestJS](https://github.com/ren-angel/Trilha-NestJS)
