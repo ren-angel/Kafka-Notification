@@ -1,0 +1,14 @@
+# Este arquivo contém as regras de alerta que serão utilizadas pelo Prometheus para monitorar o estado dos serviços.
+
+# Lista de grupos de regras de alerta.
+groups:
+  - name: notification_error # Nome do grupo
+    rules:
+      - alert: NotificationError # Nome do alerta
+        expr: increase(notification_errors_total[1m]) > 0 # Verifica se o contador de erros aumentou no último minuto
+        for: 1m # Tempo que a condição deve ser verdadeira para disparar o alerta
+        labels: 
+          severity: warning # Nível de severidade do alerta
+        annotations:
+          summary: "Erro no Serviço de Notificação" # Resumo do alerta
+          description: "Ocorreu um erro no serviço de notificação. Total de erros detectados: {{ $value }}." # Descrição detalhada

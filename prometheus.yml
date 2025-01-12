@@ -1,0 +1,24 @@
+# Use o comando a seguir para recriar o contêiner Docker do Prometheus com está configuração:
+
+# docker stop nome-do-contêiner
+# docker rm nome-do-contêiner
+# docker run -d --name nome-do-contêiner -p 9090:9090 -v caminho/para/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus:latest
+
+# Configurações globais do Prometheus
+global:
+  scrape_interval: 15s  # Define o intervalo de coleta de métricas
+
+# Definição de scrape (onde Prometheus vai buscar as métricas)
+scrape_configs:
+  - job_name: 'notification-service' # Nome do job
+    static_configs: # Configurações estáticas
+      - targets: ['host.docker.internal:5000'] # Endereço do serviço que será coletado
+
+# Configuração de alertas
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['localhost:9093']  # Endereço do Alertmanager
+
+rule_files:
+  - "alert_rules.yml"  # Arquivo contendo as regras de alerta
