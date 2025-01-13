@@ -13,7 +13,7 @@ import { PrometheusModule } from '@willsoto/nestjs-prometheus';
         transport: Transport.KAFKA,
         options: {
           client: {
-            brokers: ['localhost:9092'],
+            brokers: ['kafka:9092'],
           },
           consumer: {
             groupId: 'notification-consumer',

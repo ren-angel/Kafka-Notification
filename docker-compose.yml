@@ -1,0 +1,57 @@
+# version: '3'
+
+services:
+  # Definição do kafka como serviço para ser utilizado pelo backend
+  kafka:
+    image: confluentinc/cp-kafka:latest 
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    networks:
+      - kafka-network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - kafka-network
+
+  # Serviço de backend
+  notification:
+    # Configuração para construir o serviço a partir do contexto(diretório) do Dockerfile
+    build:
+      context: ./
+    # Mapeamento de porta para acesso externo, porta 5000 do host para porta 5000 do contêiner
+    ports:
+      - "5000:5000"
+    # Monta um volume para o serviço, útil para persistir dados de banco de dados, arquivos de log, etc.
+    volumes:
+      - notification_data:/notification/data
+    depends_on:
+      # Garante que o Kafka estará rodando antes do serviço iniciar
+      - kafka
+    networks:
+      - kafka-network
+
+# Definição dos volumes no nível superior
+volumes:
+  # Define um volume nomeado para persistir os dados do serviço
+  notification_data:
+
+# Definição das redes para os serviços poderem se comunicar
+networks:
+  # Rede para comunicação entre os contêineres do Kafka e de notificação
+  kafka-network:
+    # Definição do driver da rede, sendo `bridge` o driver padrão, usado para comunicação entre contêineres em um mesmo host
+    driver: bridge
