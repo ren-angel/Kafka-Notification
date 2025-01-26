@@ -7,11 +7,14 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:9092,EXTERNAL://0.0.0.0:9091
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,EXTERNAL://localhost:9091
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     ports:
       - "9092:9092"
+      - "9091:9091"
     depends_on:
       - zookeeper
     networks:
@@ -41,6 +44,8 @@ services:
     depends_on:
       # Garante que o Kafka estará rodando antes do serviço iniciar
       - kafka
+    # Comando para esperar o Kafka estar completamente disponível antes de iniciar o serviço, utilizando o script `wait-for-it.sh`
+    command: ["./wait-for-it.sh", "-t", "30", "kafka:9092", "--", "npm", "run", "start:prod"]
     networks:
       - kafka-network
 

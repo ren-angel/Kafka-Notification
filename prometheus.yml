@@ -12,7 +12,7 @@ global:
 scrape_configs:
   - job_name: 'notification-service' # Nome do job
     static_configs: # Configurações estáticas
-      - targets: ['host.docker.internal:5000'] # Endereço do serviço que será coletado
+      - targets: ['notification:5000'] # Endereço do serviço que será coletado
 
 # Configuração de alertas
 alerting:

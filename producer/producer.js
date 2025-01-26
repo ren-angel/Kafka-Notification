@@ -9,7 +9,7 @@ async function sendMessage() {
   // Cria uma instância do Kafka com o endereço do broker
   const kafka = new Kafka({
     clientId: 'notification-producer', // Identificação do cliente produtor
-    brokers: ['localhost:9092'], // Endereços dos brokers Kafka
+    brokers: ['localhost:9091'], // Endereços dos brokers Kafka
   });
 
   const producer = kafka.producer(); // Cria um produtor Kafka
