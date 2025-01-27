@@ -10,9 +10,13 @@ global:
 
 # Definição de scrape (onde Prometheus vai buscar as métricas)
 scrape_configs:
-  - job_name: 'notification-service' # Nome do job
+  - job_name: 'prometheus' # Nome do job
     static_configs: # Configurações estáticas
-      - targets: ['notification:5000'] # Endereço do serviço que será coletado
+      - targets: ['localhost:9090'] # Endereço do serviço que será coletado
+          
+  - job_name: 'notification-service'
+    static_configs:
+      - targets: ['notification:5000']
 
 # Configuração de alertas
 alerting:

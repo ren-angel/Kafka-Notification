@@ -4,6 +4,7 @@ services:
   # Definição do kafka como serviço para ser utilizado pelo backend
   kafka:
     image: confluentinc/cp-kafka:latest 
+    container_name: kafka
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -18,23 +19,26 @@ services:
     depends_on:
       - zookeeper
     networks:
-      - kafka-network
+      - notification-network
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     ports:
       - "2181:2181"
     networks:
-      - kafka-network
+      - notification-network
 
   # Serviço de backend
   notification:
     # Configuração para construir o serviço a partir do contexto(diretório) do Dockerfile
     build:
       context: ./
+    # Define o nome do contêiner
+    container_name: notification
     # Mapeamento de porta para acesso externo, porta 5000 do host para porta 5000 do contêiner
     ports:
       - "5000:5000"
@@ -47,7 +51,7 @@ services:
     # Comando para esperar o Kafka estar completamente disponível antes de iniciar o serviço, utilizando o script `wait-for-it.sh`
     command: ["./wait-for-it.sh", "-t", "30", "kafka:9092", "--", "npm", "run", "start:prod"]
     networks:
-      - kafka-network
+      - notification-network
 
 # Definição dos volumes no nível superior
 volumes:
@@ -57,6 +61,9 @@ volumes:
 # Definição das redes para os serviços poderem se comunicar
 networks:
   # Rede para comunicação entre os contêineres do Kafka e de notificação
-  kafka-network:
+  notification-network:
+    # Define a rede como externa, para que o Docker Compose não crie uma rede interna. Esta rede será criada manualmente por linha de comando, com o comando `docker network create notification-network`
+    external: true
+  
     # Definição do driver da rede, sendo `bridge` o driver padrão, usado para comunicação entre contêineres em um mesmo host
-    driver: bridge
+    # driver: bridge
