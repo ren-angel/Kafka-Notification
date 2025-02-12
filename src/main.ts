@@ -4,7 +4,11 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
 
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
+  // Cria uma instância do microserviço de notificação como uma aplicação hibrída
+  const app = await NestFactory.create(AppModule);
+
+  // Conecta o microserviço ao Kafka
+  app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.KAFKA,
     options: {
       client: {
@@ -13,10 +17,12 @@ async function bootstrap() {
       consumer: {
         groupId: 'notification-consumer',
       },
-    },
-  });
-
-  await app.listen();
+    }
+  })
+  
+  // Inicia o microserviço e o servidor HTTP na porta 5001 para expor as métricas
+  await app.startAllMicroservices();
+  await app.listen(5000);
   console.log('Microserviço de notificação rodando');
 }
 

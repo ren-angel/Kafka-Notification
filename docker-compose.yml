@@ -1,5 +1,3 @@
-# version: '3'
-
 services:
   # Definição do kafka como serviço para ser utilizado pelo backend
   kafka:
